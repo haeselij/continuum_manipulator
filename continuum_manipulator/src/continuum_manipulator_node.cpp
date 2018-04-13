@@ -7,13 +7,13 @@
 #include "continuum_manipulator.cpp"
 
 
+
 int main(int argc, char** argv)
 {
-	float world_frame[3]={0,0,0};
-	float *test_ptr=NULL;
   ros::init(argc, argv, "sub");
   ros::NodeHandle nodeHandle("~");
-	Segment s1(10, test_ptr, nodeHandle);
+	Segment s0(nodeHandle, 0);
+	Segment s1(nodeHandle, 1);
 
   ros::spin();
   return 0;
