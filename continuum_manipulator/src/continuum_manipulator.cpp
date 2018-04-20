@@ -8,19 +8,50 @@
 #include <probo_msgs/angle_curr.h>
 
 using namespace Eigen;
+using namespace std;
 
-Segment::Segment(ros::NodeHandle& nodehandle, int pos)
+Segment::Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f& H_prev) : H_prev_(H_prev)
 {
   r_ss = 10;
+  l_bar = 0;
   nodehandle_ = nodehandle;
   pos_in_trunk = pos;
+
+  /*
+  // Check if segment is the first one. If this is the case there is no H_prev needed.
+  if(pos_in_trunk == 0)
+  {
+    Matrix4f identity;
+    identity.setIdentity(4, 4);
+
+    for(int i = 0; i < 4; i++)
+    {
+      for(int j = 0; j < 4; j++)
+      {
+        H_prev_(i,j) = identity.coeff(i,j);
+      }
+    }
+  //cout << H_prev_(0,0) << endl;
+  }
+  else
+  {
+  H_prev_ = H_prev;
+
+  cout<<"H_prev_="<<H_prev_<< endl;
+}*/
 
   sub_l = nodehandle.subscribe("/laengen", 1, &Segment::lengthCallback, this);
   pub_pos = nodehandle.advertise<probo_msgs::tip_pos>("/tip_position", 1);
   pub_angle = nodehandle.advertise<probo_msgs::angle_curr>("/angle_curr", 1);
 }
 
+Matrix4f & Segment::getH_prev()
+{
+  //return reference of H
+  return H;
+}
 
+/*
 float Segment::sinX(float alpha)
 {
   if (sin(alpha) == 0.0 && abs(alpha) < 3.1415)
@@ -30,7 +61,9 @@ float Segment::sinX(float alpha)
 
   else return sin(alpha)/alpha;
 }
+*/
 
+// arctan2 function
 float Segment::arctan2(float y, float x)
 {
   float ratio = y/x;
@@ -58,44 +91,81 @@ float Segment::arctan2(float y, float x)
   else return -M_PI/2.0;
 }
 
-void Segment::trafo(){
-  Matrix3f R_0;
-  R_0(0,0) = cos(phi_prev) * cos(theta_prev) * cos (phi_prev) + sin(phi_prev) * sin(phi_prev);
-  R_0(0,1) = cos(phi_prev) * cos(theta_prev) * sin(phi_prev) - sin(phi_prev) * cos(phi_prev);
-  R_0(0,2) = - cos(phi_prev) * sin(theta_prev);
+// calculation of transformation matrix H
+void Segment::build_trafo()
+{
+  // limit analysis for theta -> 0 in order to avoid devided by 0 error
+  if(theta == 0)
+  {
+    H(0,0) = 1;
+    H(0,1) = 0;
+    H(0,2) = 0;
+    H(0,3) = 0;
 
-  R_0(1,0) = sin(phi_prev) * cos(theta_prev) * cos (phi_prev) - cos(phi_prev) * sin(phi_prev);
-  R_0(1,1) = sin(phi_prev) * cos(theta_prev) * sin(phi_prev) + cos(phi_prev) * cos(phi_prev);
-  R_0(1,2) = - sin(phi_prev) * sin(theta_prev);
+    H(1,0) = 0;
+    H(1,1) = 1;
+    H(1,2) = 0;
+    H(1,3) = 0;
 
-  R_0(2,0) = sin(theta_prev) * cos(phi_prev);
-  R_0(2,1) = sin(theta_prev) * sin(phi_prev);
-  R_0(2,2) = cos(theta_prev);
+    H(2,0) = 0;
+    H(2,1) = 0;
+    H(2,2) = 1;
+    H(2,3) = l_bar;
 
-  tip_pos_0 = R_0*tip_pos + r_offset;
+    H(3,0) = 0;
+    H(3,1) = 0;
+    H(3,2) = 0;
+    H(3,3) = 1;
+  }
+  else
+  {
+    H(0,0) = cos(phi)*cos(phi)*(cos(theta)-1) + 1;
+    H(0,1) = cos(phi)*sin(phi)*(cos(theta)-1);
+    H(0,2) = cos(phi)*sin(theta);
+    H(0,3) = l_bar*cos(phi)*(1-cos(theta))/theta;
+
+    H(1,0) = sin(phi)*cos(phi)*(cos(theta)-1);
+    H(1,1) = cos(phi)*cos(phi)*(1-cos(theta)) + cos(theta);
+    H(1,2) = sin(phi)*sin(theta);
+    H(1,3) = l_bar*sin(phi)*(1-cos(theta))/theta;
+
+    H(2,0) = - cos(phi) * sin(theta);
+    H(2,1) = - sin(phi) * sin(theta);
+    H(2,2) = cos(theta);
+    H(2,3) = l_bar*sin(theta)/theta;
+
+    H(3,0) = 0;
+    H(3,1) = 0;
+    H(3,2) = 0;
+    H(3,3) = 1;
+  }
 }
 
 void Segment::lengthCallback(const probo_msgs::distance & l)
 {
-  float l_bar = 0;
-
+  probo_msgs::angle_curr ac;
+  probo_msgs::tip_pos tp;
+  l_bar = 0;
   for(int i = 0; i < 3; i++)
   {
     length[i] = l.length[3*pos_in_trunk + i] - 15 + 300;
     l_bar += length[i];
   }
 
-  l_bar /= 3.0;
+  l_bar = l_bar/ 3.0;
 
-  theta = (2.0/3.0) * sqrt(length[0]*length[0] + length[1]*length[1] + length[2]*length[2] -
-                (length[0]*length[1] + length[0]*length[2] + length[1]*length[2]))/r_ss;
-  phi = arctan2(sqrt(3)*(length[2] - length[1]),(length[1] + length[2] -2*length[0]));
 
-  tip_pos(0) = -l_bar*sinX(theta/2.0)*cos((M_PI - theta)/2.0)*sin(phi - M_PI/2.0);
-  tip_pos(1) = l_bar*sinX(theta/2.0)*cos((M_PI - theta)/2.0)*cos(phi - M_PI/2.0);
-  tip_pos(2) = l_bar*sinX(theta/2.0)*sin((M_PI - theta)/2.0);
 
-  if (pos_in_trunk == 0)
+  theta = (2.0/3.0)*sqrt(length[0]*length[0] + length[1]*length[1] + length[2]*length[2] -
+          (length[0]*length[1] + length[0]*length[2] + length[1]*length[2]))/r_ss;
+  phi = arctan2(sqrt(3)*(length[2] - length[1]), (length[1] + length[2] -2*length[0]));
+
+
+  //tip_pos(0) = -l_bar*sinX(theta/2.0)*cos((M_PI - theta)/2.0)*sin(phi - M_PI/2.0);
+  //tip_pos(1) = l_bar*sinX(theta/2.0)*cos((M_PI - theta)/2.0)*cos(phi - M_PI/2.0);
+  //tip_pos(2) = l_bar*sinX(theta/2.0)*sin((M_PI - theta)/2.0);
+
+  /*if (pos_in_trunk == 0)
   {
       theta_prev = 0;
       phi_prev = 0;
@@ -106,23 +176,32 @@ void Segment::lengthCallback(const probo_msgs::distance & l)
                   (l.length[3*(pos_in_trunk-1)]*l.length[3*(pos_in_trunk-1) + 1] + l.length[(pos_in_trunk-1)]*l.length[(pos_in_trunk-1) + 2] + l.length[(pos_in_trunk-1) + 1]*l.length[(pos_in_trunk-1) + 2]))/r_ss;
     phi_prev = arctan2(sqrt(3)*(l.length[3] - l.length[2]),(l.length[2] + l.length[3] -2*l.length[1]));
 
-    r_offset (0) = -l_bar*sinX(theta_prev/2.0)*cos((M_PI - theta_prev)/2.0)*sin(phi_prev - M_PI/2.0);
-    r_offset (1) = l_bar*sinX(theta_prev/2.0)*cos((M_PI - theta_prev)/2.0)*cos(phi_prev - M_PI/2.0);
-    r_offset (2) = l_bar*sinX(theta_prev/2.0)*sin((M_PI - theta_prev)/2.0);
-  }
-  trafo();
+    //r_offset (0) = -l_bar*sinX(theta_prev/2.0)*cos((M_PI - theta_prev)/2.0)*sin(phi_prev - M_PI/2.0);
+    //(r_offset (1) = l_bar*sinX(theta_prev/2.0)*cos((M_PI - theta_prev)/2.0)*cos(phi_prev - M_PI/2.0);
+    //r_offset (2) = l_bar*sinX(theta_prev/2.0)*sin((M_PI - theta_prev)/2.0);
+  }*/
 
-  probo_msgs::angle_curr ac;
-  probo_msgs::tip_pos tp;
+  build_trafo();
+  if(pos_in_trunk==0)
+  {
+    cout << 0 << endl;
+  }
+  else cout << 1 << endl;
+ cout << "H="<< H<< endl;
+ cout << "H_prev=" << H_prev_ << endl;
+  H = H_prev_*H;
 
   for(int i = 0; i<3; i++)
   {
-    tp.tip_pos[i] = tip_pos_0(i);
+    tp.tip_pos[3*pos_in_trunk+i] = H.coeff(i, 3);
   }
+
 
   ac.theta_curr[pos_in_trunk] = theta;
   ac.phi_curr[pos_in_trunk] = phi;
+   if(pos_in_trunk == 1){
+     pub_angle.publish(ac);
+     pub_pos.publish(tp);
+   }
 
-  pub_angle.publish(ac);
-  pub_pos.publish(tp);
 }

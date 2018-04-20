@@ -15,25 +15,30 @@ class Segment
 {
   public:
     // constructor
-    Segment(ros::NodeHandle& nodehandle, int pos);
+    Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f & H_prev);
+    // method to get transformation matrix of previous Segment
+    Matrix4f & getH_prev();
 
 
   private:
     void lengthCallback(const probo_msgs::distance & l);
-    float sinX(float alpha);
+    //float sinX(float alpha);
     float arctan2(float y, float x);
-    void trafo();
+    void build_trafo();
 
     float r_ss;
     float length[3];
-    Vector3f tip_pos;
+    float l_bar;
     Vector3f tip_pos_0;
-    Vector3f r_offset;
+    //Vector3f r_offset;
     float theta;
     float phi;
     int pos_in_trunk;
-    float theta_prev;
-    float phi_prev;
+    //float theta_prev;
+    //float phi_prev;
+
+    Matrix4f  &H_prev_;
+    Matrix4f H;
 
     ros::Subscriber sub_l;
     ros::Publisher pub_pos;

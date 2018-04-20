@@ -1,1 +1,1 @@
-float64[3] tip_pos
+float64[6] tip_pos

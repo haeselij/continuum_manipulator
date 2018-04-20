@@ -1,5 +1,5 @@
-int32 segment
-float64 theta 
-float64 phi
+
+float64[4] theta 
+float64[4] phi
 float64 distance
 

@@ -12,8 +12,10 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "sub");
   ros::NodeHandle nodeHandle("~");
-	Segment s0(nodeHandle, 0);
-	Segment s1(nodeHandle, 1);
+  Matrix4f baseFrame;
+  baseFrame.setIdentity();
+	Segment s0(nodeHandle, 0, baseFrame);
+	Segment s1(nodeHandle, 1, s0.getH_prev());
 
   ros::spin();
   return 0;
