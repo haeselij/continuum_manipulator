@@ -14,8 +14,8 @@ int main(int argc, char** argv)
   ros::NodeHandle nodeHandle("~");
   Matrix4f baseFrame;
   baseFrame.setIdentity();
-	Segment s0(nodeHandle, 0, baseFrame);
-	Segment s1(nodeHandle, 1, s0.getH_prev());
+	Segment s0(nodeHandle, 0, baseFrame, "/winkel_seg_0", "/head_pos_0",0);
+	Segment s1(nodeHandle, 1, s0.getH_prev(), "/winkel_seg_1", "/tip_pos_1",1);
 
   ros::spin();
   return 0;

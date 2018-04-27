@@ -10,12 +10,18 @@
 using namespace Eigen;
 using namespace std;
 
-Segment::Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f& H_prev) : H_prev_(H_prev)
+Segment::Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f& H_prev, string str_angle, string str_head, bool end) : H_prev_(H_prev)
 {
   r_ss = 10;
   l_bar = 0;
+  r_muscle = 26;
   nodehandle_ = nodehandle;
   pos_in_trunk = pos;
+  // Translation from the interface
+  V_if(0)=0;
+  V_if(1)=0;
+  V_if(2)=10;
+  V_if(0)=0;
 
   /*
   // Check if segment is the first one. If this is the case there is no H_prev needed.
@@ -41,8 +47,8 @@ Segment::Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f& H_prev) : H_pre
 }*/
 
   sub_l = nodehandle.subscribe("/laengen", 1, &Segment::lengthCallback, this);
-  pub_pos = nodehandle.advertise<probo_msgs::tip_pos>("/tip_position", 1);
-  pub_angle = nodehandle.advertise<probo_msgs::angle_curr>("/angle_curr", 1);
+  pub_pos = nodehandle.advertise<probo_msgs::tip_pos>(str_head, 1);
+  pub_angle = nodehandle.advertise<probo_msgs::angle_curr>(str_angle, 1);
 }
 
 Matrix4f & Segment::getH_prev()
@@ -139,6 +145,16 @@ void Segment::build_trafo()
     H(3,2) = 0;
     H(3,3) = 1;
   }
+
+  if ( end == false)
+  {
+  Matrix4f H_if;
+
+  H_if.setIdentity(4, 4);
+  H_if(2,3) = 13.9;
+
+  H = H*H_if;
+  }
 }
 
 void Segment::lengthCallback(const probo_msgs::distance & l)
@@ -182,26 +198,51 @@ void Segment::lengthCallback(const probo_msgs::distance & l)
   }*/
 
   build_trafo();
-  if(pos_in_trunk==0)
+  calculate_q();
+  /*if(pos_in_trunk==0)
   {
     cout << 0 << endl;
   }
-  else cout << 1 << endl;
- cout << "H="<< H<< endl;
- cout << "H_prev=" << H_prev_ << endl;
-  H = H_prev_*H;
+  else cout << 1 << endl;*/
+ //cout << "H="<< H<< endl;
+ //cout << "H_prev=" << H_prev_ << endl;
+
+  H = (H_prev_)*H;
+
+ // adding the interface offset
+
 
   for(int i = 0; i<3; i++)
   {
     tp.tip_pos[3*pos_in_trunk+i] = H.coeff(i, 3);
   }
 
+//cout << "theta=" << theta << endl;
+//cout << "phi=" << phi << endl;
+  ac.theta_curr[0] = theta;
+  ac.phi_curr[0] = phi;
 
-  ac.theta_curr[pos_in_trunk] = theta;
-  ac.phi_curr[pos_in_trunk] = phi;
-   if(pos_in_trunk == 1){
      pub_angle.publish(ac);
      pub_pos.publish(tp);
-   }
 
+
+}
+
+void Segment::calculate_q()
+{
+  // calculate the radii (curvature)
+  float r_curv[3];
+  r_curv[0] =  length[0] / theta;
+  r_curv[1] =  length[1] / theta;
+  r_curv[2] =  length[2] / theta;
+  float l_im[3];
+  l_im[0] = ( length[0] + length[1]) / 2;
+  l_im[1] = ( length[1] + length [2]) / 2;
+  l_im[2] = ( length[0] + length[2]) / 2;
+
+  for (int i = 0; i < 3; i++)
+  {
+    q[i] = l_im[i] * ( 1 - r_muscle / r_curv[i] * cos( 2 * M_PI / 3 * i - phi +M_PI/6) );
+    cout << pos_in_trunk << "Length " << i <<" = "<< q[i] << endl;
+  }
 }

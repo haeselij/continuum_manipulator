@@ -15,7 +15,7 @@ class Segment
 {
   public:
     // constructor
-    Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f & H_prev);
+    Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f & H_prev, string str_angle, string str_head, bool end);
     // method to get transformation matrix of previous Segment
     Matrix4f & getH_prev();
 
@@ -26,7 +26,9 @@ class Segment
     float arctan2(float y, float x);
     void build_trafo();
 
+
     float r_ss;
+    float r_muscle;
     float length[3];
     float l_bar;
     Vector3f tip_pos_0;
@@ -39,9 +41,13 @@ class Segment
 
     Matrix4f  &H_prev_;
     Matrix4f H;
+    Vector4f V_if;
 
     ros::Subscriber sub_l;
     ros::Publisher pub_pos;
     ros::Publisher pub_angle;
     ros::NodeHandle nodehandle_;
+    bool end;
+    void calculate_q();
+    float q[3];
 };
