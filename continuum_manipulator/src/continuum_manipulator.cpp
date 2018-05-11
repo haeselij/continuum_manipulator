@@ -14,14 +14,8 @@ Segment::Segment(ros::NodeHandle& nodehandle, int pos, Matrix4f& H_prev, string 
 {
   r_ss = 10;
   l_bar = 0;
-  r_muscle = 26;
   nodehandle_ = nodehandle;
   pos_in_trunk = pos;
-  // Translation from the interface
-  V_if(0)=0;
-  V_if(1)=0;
-  V_if(2)=10;
-  V_if(0)=0;
 
   /*
   // Check if segment is the first one. If this is the case there is no H_prev needed.
@@ -222,27 +216,32 @@ void Segment::lengthCallback(const probo_msgs::distance & l)
   ac.theta_curr[0] = theta;
   ac.phi_curr[0] = phi;
 
-     pub_angle.publish(ac);
-     pub_pos.publish(tp);
+  pub_angle.publish(ac);
+  pub_pos.publish(tp);
 
 
 }
 
 void Segment::calculate_q()
 {
-  // calculate the radii (curvature)
-  float r_curv[3];
-  r_curv[0] =  length[0] / theta;
-  r_curv[1] =  length[1] / theta;
-  r_curv[2] =  length[2] / theta;
-  float l_im[3];
-  l_im[0] = ( length[0] + length[1]) / 2;
-  l_im[1] = ( length[1] + length [2]) / 2;
-  l_im[2] = ( length[0] + length[2]) / 2;
 
-  for (int i = 0; i < 3; i++)
+  float r_m = l_bar/theta;
+  cout << r_m <<endl;
+  float phi_0 = 0; //M_PI;
+  r_muscle = 26;
+  // calculate the radii (curvature)
+  for (int i = 0; i < 3 ; i++)
   {
-    q[i] = l_im[i] * ( 1 - r_muscle / r_curv[i] * cos( 2 * M_PI / 3 * i - phi +M_PI/6) );
-    cout << pos_in_trunk << "Length " << i <<" = "<< q[i] << endl;
+    if( theta == 0)
+    {
+      q[i] = 300;
+    }
+    else
+    {
+      q[i] = theta*(r_m + r_muscle*cos(phi + 2.0/3.0*M_PI*i + phi_0));
+    }
+
+    cout << "Balg " << i << "= " << q[i] << endl;
   }
+
 }
