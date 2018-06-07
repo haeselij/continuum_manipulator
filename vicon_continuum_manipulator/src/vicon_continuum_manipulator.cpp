@@ -1,4 +1,4 @@
-#include <ros/ros.h>
+ #include <ros/ros.h>
 #include <probo_msgs/pressure.h>
 #include <math.h>
 #include <Eigen3/Eigen/Dense>
@@ -20,7 +20,7 @@ Vector3f pressurefunction(float u_phi,float u_theta)
   Matrix2f P2_;
   Matrix2f P3_;
 
-  float r=1;  //normal 35 mm
+  float r=1.0;  //normal 35 mm
   p(0,0)=0;
   p(0,1)= -r*sqrt(3.0)/2.0;
   p(0,2)= r*sqrt(3.0)/2.0;
@@ -102,48 +102,195 @@ int main(int argc, char** argv)
   ros::Publisher publisher = nodeHandle.advertise<probo_msgs::pressure>("/druecke",1);
   ros::Rate loop_rate(100);
   float i = 0.0 ;
-  float time = 100.0;
-  float max_press = 1.5;
+  float time = 500.0;
+  float max_press = 0.8;
+  int muscle_0 = 1;
+  int muscle_1 = 6;
+  int muscle_2 = 8;
 
   while (ros::ok())
   {
     probo_msgs::pressure msg_pressure;
-    //"left right movement"
+    for (int j = 0; i < 12; i++)
+    {
+      msg_pressure.press[j] = 0;
+    }
+    // pressure skript single points one chamber
 
-    /*if (i < time)
-   {
-      msg_pressure.press[0] = 1.5/time*i;
-      msg_pressure.press[3] = 1.5/time*i;
-      publisher.publish(msg_pressure);
-    }
-    else if (i < time * 2)
+
+    if (i < time )
     {
-      msg_pressure.press[0] = 1.5-1.5/time*(i-time);
-      msg_pressure.press[3] = 1.5-1.5/time*(i-time);
+      msg_pressure.press[muscle_0] = 0.25*max_press;
+
       publisher.publish(msg_pressure);
     }
-    else if (i < time * 3)
+
+
+     else if (i < 2 * time)
     {
-      msg_pressure.press[1] = 1.5/time*(i - time*2);
-      msg_pressure.press[2] = 1.5/time*(i - time*2);
-      msg_pressure.press[4] = 1.5/time*(i - time*2);
-      msg_pressure.press[5] = 1.5/time*(i - time*2);
+      msg_pressure.press[muscle_0] = 0.5*max_press;
       publisher.publish(msg_pressure);
     }
-    else if ( i < time * 4)
+
+
+      else if (i < 3 * time)
+    {
+      msg_pressure.press[muscle_0] = 0.75 * max_press;
+      publisher.publish(msg_pressure);
+    }
+
+
+    else if (i < 4* time)
+    {
+      msg_pressure.press[muscle_0] = max_press;
+      publisher.publish(msg_pressure);
+    }
+
+    // pressure skript points 2 chambers
+    else if (i < 5*time)
+    {
+      publisher.publish(msg_pressure);
+    }
+      else if (i < 6 * time )
       {
-      msg_pressure.press[1] = 1.5 - 1.5/time*(i - time*3);
-      msg_pressure.press[2] = 1.5 - 1.5/time*(i - time*3);
-      msg_pressure.press[4] = 1.5 - 1.5/time*(i - time*3);
-      msg_pressure.press[5] = 1.5 - 1.5/time*(i - time*3);
+        msg_pressure.press[muscle_0] = 0.25 * max_press;
+        msg_pressure.press[muscle_1] = 0.25 * max_press;
+        publisher.publish(msg_pressure);
+      }
+
+      else if (i < 7 * time)
+      {
+        msg_pressure.press[muscle_0] = 0.5*max_press;
+        msg_pressure.press[muscle_1] = 0.5 * max_press;
+        publisher.publish(msg_pressure);
+    }
+    else if (i < 8 * time)
+    {
+      msg_pressure.press[muscle_0] = 0.75 * max_press;
+        msg_pressure.press[muscle_1] = 0.75 * max_press;
+        publisher.publish(msg_pressure);
+    }
+    else if (i < 9 * time)
+    {
+      msg_pressure.press[muscle_0] =  max_press;
+      msg_pressure.press[muscle_1] =  max_press;
       publisher.publish(msg_pressure);
-    } */
+    }
+
+
+    // pressure skript points asynchron
+
+    else if (i < 10*time)
+    {
+      publisher.publish(msg_pressure);
+    }
+    else if (i < 11 * time )
+    {
+      msg_pressure.press[muscle_0] = 0.25 * max_press;
+      msg_pressure.press[muscle_1] = 0.5 * max_press;
+      publisher.publish(msg_pressure);
+    }
+
+    else if (i < 12 * time)
+    {
+      msg_pressure.press[muscle_0] = 0.1*max_press;
+      msg_pressure.press[muscle_1] = 0.5 * max_press;
+      publisher.publish(msg_pressure);
+    }
+    else if (i < 13 * time)
+    {
+      msg_pressure.press[muscle_0] = 0.5 * max_press;
+        msg_pressure.press[muscle_1] = 0.75 * max_press;
+        publisher.publish(msg_pressure);
+    }
+    else if (i < 14 * time)
+    {
+      msg_pressure.press[muscle_0] =  0.3*max_press;
+      msg_pressure.press[muscle_1] =  0.4*max_press;
+      publisher.publish(msg_pressure);
+    }
+
+    // continous pressure change
+    else if (i < 15 * time)
+    {
+      msg_pressure.press[muscle_0] = max_press / time*(i - 14*time);
+      msg_pressure.press[muscle_1] = 0.0;
+      publisher.publish(msg_pressure);
+    }
+
+    else if (i < 16 * time)
+    {
+      msg_pressure.press[muscle_0] = max_press*(1 - 1/time*(i - 15*time));
+      msg_pressure.press[muscle_1] = 0.0;
+      publisher.publish(msg_pressure);
+    }
+
+    else if ( i < 17*time)
+    {
+      msg_pressure.press[muscle_0] = max_press / time*(i - 16*time);
+      msg_pressure.press[muscle_2] =  max_press / time*(i - 16*time);
+      publisher.publish(msg_pressure);
+    }
+
+    else if ( i < 18*time)
+    {
+      msg_pressure.press[muscle_0] = max_press*(1 - 1/time*(i - 17.0*time));
+      msg_pressure.press[muscle_2] = max_press*(1 - 1/time*(i - 17.0*time));
+      publisher.publish(msg_pressure);
+    }
+
+  //circular movement
+    else if (i < 20 * time)
+    {
+    float p_phi = 0.7*cos(M_PI/time*i);
+    float p_theta = 0.7*sin(M_PI/time*i);
+    Vector3f p_123 = pressurefunction(p_phi, p_theta);
+
+    msg_pressure.press[muscle_0] = p_123[0];
+    msg_pressure.press[muscle_1] = p_123[1];
+    msg_pressure.press[muscle_2] = p_123[2];
+    publisher.publish(msg_pressure);
+    }
+
+
+
+    //"left right movement"
+    else if (i < 21*time)
+    {
+      publisher.publish(msg_pressure);
+    }
+    else if (i < 22*time)
+   {
+      msg_pressure.press[muscle_0] = max_press/time*(i-21*time);
+      publisher.publish(msg_pressure);
+    }
+    else if (i < time * 23)
+    {
+      msg_pressure.press[muscle_0] = max_press-  max_press/time*(i - 22*time);
+      publisher.publish(msg_pressure);
+    }
+    else if (i < time * 24)
+    {
+      msg_pressure.press[muscle_1] = max_press/time*(i - time*23);
+      msg_pressure.press[muscle_2] = max_press/time*(i - time*23);
+      //msg_pressure.press[4] = max/time*(i - time*23);
+      //msg_pressure.press[5] = 1.5/time*(i - time*23);
+      publisher.publish(msg_pressure);
+    }
+    else if ( i < time * 25)
+      {
+      msg_pressure.press[muscle_1] = max_press - max_press/time*(i - time*24);
+      msg_pressure.press[muscle_2] = max_press - max_press/time*(i - time*24);
+      //msg_pressure.press[4] = 1.5 - 1.5/time*(i - time*24);
+      //msg_pressure.press[5] = 1.5 - 1.5/time*(i - time*24);
+      publisher.publish(msg_pressure);
+    }
 
     // "up down movement"
 
   /* if (i < time)
     {
-      msg_pressure.press[0] = 1.0/2.0 *max_press/time*i;
+      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press/time*i;
       msg_pressure.press[1] = sqrt(3.0)/2.0*max_press/time*i;
 
       msg_pressure.press[3] = 1.0/2.0 *max_press/time*i;
@@ -155,7 +302,7 @@ int main(int argc, char** argv)
 
     else if (i < time*2)
     {
-      msg_pressure.press[0] = 1.0/2.0 *max_press - 1.0/2.0 *max_press/time*(i-time);
+      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press - 1.0/2.0 *max_press/time*(i-time);
       msg_pressure.press[1] = sqrt(3.0)/2.0*( 1.0 - 1.0/time*(i-time));
 
       msg_pressure.press[3] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i-time));
@@ -167,7 +314,7 @@ int main(int argc, char** argv)
 
     else if (i < time*3)
     {
-      msg_pressure.press[0] = 1.0/2.0 *max_press/time*(i - time*2.0);
+      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press/time*(i - time*2.0);
       msg_pressure.press[2] = sqrt(3.0)/2.0*max_press/time*(i - time*2.0);
 
       msg_pressure.press[3] = 1.0/2.0 *max_press/time*(i - time*2.0);
@@ -178,7 +325,7 @@ int main(int argc, char** argv)
 
     else if ( i < time * 4)
       {
-      msg_pressure.press[0] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i - 3.0*time));
+      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i - 3.0*time));
       msg_pressure.press[2] = sqrt(3.0)/2.0*( 1.0 - 1.0/time*(i - 3.0*time));
 
       msg_pressure.press[3] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i - 3.0*time));
@@ -188,35 +335,17 @@ int main(int argc, char** argv)
     }*/
 
     // fixed position1
-    /*msg_pressure.press[0] = 1;
+    /*msg_pressure.press[muscle_0] = 1;
     msg_pressure.press[4] = 1;
     msg_pressure.press[5] = 1;
     publisher.publish(msg_pressure);*/
 
     //fixed position2
-    /*msg_pressure.press[0] = max_press/2;
+    /*msg_pressure.press[muscle_0] = max_press/2;
     msg_pressure.press[2] = max_press/4;
     msg_pressure.press[4] = max_press/2;
     msg_pressure.press[3] = max_press/5;
     publisher.publish(msg_pressure);*/
-
-    //circular movement
-    float p_phi = max_press*cos(2*M_PI/time*i);
-    float p_theta = max_press*sin(2*M_PI/time*i);
-    Vector3f p_123 = pressurefunction(p_phi, p_theta);
-
-    msg_pressure.press[0] = p_123[0];
-    msg_pressure.press[1] = p_123[1];
-    msg_pressure.press[2] = p_123[3];
-
-    p_123 = pressurefunction(-p_phi, p_theta);
-    msg_pressure.press[3] = p_123[0];
-    msg_pressure.press[4] = p_123[1];
-    msg_pressure.press[5] = p_123[3];
-    publisher.publish(msg_pressure);
-    //msg_pressure.press[0] = sin(2*M_PI/50*i)*1.5;
-
-
 
     ros::spinOnce();
     loop_rate.sleep();
