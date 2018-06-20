@@ -2,6 +2,7 @@
 #include <probo_msgs/pressure.h>
 #include <math.h>
 #include <Eigen3/Eigen/Dense>
+#include <stdlib.h>
 
 using namespace std;
 using namespace Eigen;
@@ -102,8 +103,11 @@ int main(int argc, char** argv)
   ros::Publisher publisher = nodeHandle.advertise<probo_msgs::pressure>("/druecke",1);
   ros::Rate loop_rate(100);
   float i = 0.0 ;
-  float time = 500.0;
-  float max_press = 0.8;
+  int k = 0;
+  float bending_press_1 = 0;
+  float time = 1000.0;
+  float T;
+  float max_press = 0.6;
   int muscle_0 = 1;
   int muscle_1 = 6;
   int muscle_2 = 8;
@@ -118,7 +122,7 @@ int main(int argc, char** argv)
     // pressure skript single points one chamber
 
 
-    if (i < time )
+  /*  if (i < time )
     {
       msg_pressure.press[muscle_0] = 0.25*max_press;
 
@@ -242,8 +246,8 @@ int main(int argc, char** argv)
   //circular movement
     else if (i < 20 * time)
     {
-    float p_phi = 0.7*cos(M_PI/time*i);
-    float p_theta = 0.7*sin(M_PI/time*i);
+    float p_phi = 0.6*cos(M_PI/(4*time)*i);
+    float p_theta = 0.6*sin(M_PI/(4*time)*i);
     Vector3f p_123 = pressurefunction(p_phi, p_theta);
 
     msg_pressure.press[muscle_0] = p_123[0];
@@ -255,97 +259,80 @@ int main(int argc, char** argv)
 
 
     //"left right movement"
-    else if (i < 21*time)
+    else if (i < 24*time)
     {
       publisher.publish(msg_pressure);
     }
-    else if (i < 22*time)
+    else if (i < 25*time)
    {
-      msg_pressure.press[muscle_0] = max_press/time*(i-21*time);
+      msg_pressure.press[muscle_0] = max_press/time*(i-24*time);
       publisher.publish(msg_pressure);
     }
-    else if (i < time * 23)
+    else if (i < time * 26)
     {
-      msg_pressure.press[muscle_0] = max_press-  max_press/time*(i - 22*time);
+      msg_pressure.press[muscle_0] = max_press-  max_press/time*(i - 25*time);
       publisher.publish(msg_pressure);
     }
-    else if (i < time * 24)
+    else if (i < time * 27)
     {
-      msg_pressure.press[muscle_1] = max_press/time*(i - time*23);
-      msg_pressure.press[muscle_2] = max_press/time*(i - time*23);
+      msg_pressure.press[muscle_1] = max_press/time*(i - time*26);
+      msg_pressure.press[muscle_2] = max_press/time*(i - time*26);
       //msg_pressure.press[4] = max/time*(i - time*23);
       //msg_pressure.press[5] = 1.5/time*(i - time*23);
       publisher.publish(msg_pressure);
     }
-    else if ( i < time * 25)
+    else if (i < 28*time)
+    {
+      publisher.publish(msg_pressure);
+    }
+    else if ( i < time * 29)
       {
-      msg_pressure.press[muscle_1] = max_press - max_press/time*(i - time*24);
-      msg_pressure.press[muscle_2] = max_press - max_press/time*(i - time*24);
+      msg_pressure.press[muscle_1] = max_press - max_press/time*(i - time*28);
+      msg_pressure.press[muscle_2] = max_press - max_press/time*(i - time*28);
       //msg_pressure.press[4] = 1.5 - 1.5/time*(i - time*24);
       //msg_pressure.press[5] = 1.5 - 1.5/time*(i - time*24);
       publisher.publish(msg_pressure);
     }
+*/
 
-    // "up down movement"
+//
+//
+// Code for bending stiffness measurement 1 muscle linear
+//
+//
+//
 
-  /* if (i < time)
-    {
-      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press/time*i;
-      msg_pressure.press[1] = sqrt(3.0)/2.0*max_press/time*i;
+if ( bending_press_1 <= max_press)  {
 
-      msg_pressure.press[3] = 1.0/2.0 *max_press/time*i;
-      msg_pressure.press[4] = sqrt(3.0)/2.0*max_press/time*i;
+  msg_pressure.press[muscle_0] = bending_press_1;
+  /*msg_pressure.press[muscle_1] = bending_press_1;
+  msg_pressure.press[muscle_2] = bending_press_1;*/
+  publisher.publish(msg_pressure);
+}
 
-      publisher.publish(msg_pressure);
+k = i;
+int t = time;
+int press_10 = max_press*10;
+/*if ( k % t == 0 )  {
 
-    }
+  bending_press_1 = bending_press_1 + 0.01;
 
-    else if (i < time*2)
-    {
-      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press - 1.0/2.0 *max_press/time*(i-time);
-      msg_pressure.press[1] = sqrt(3.0)/2.0*( 1.0 - 1.0/time*(i-time));
+}*/
+//
+//
+// code for bending stiffness random
+//
+//
+//
 
-      msg_pressure.press[3] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i-time));
-      msg_pressure.press[4] = sqrt(3.0)/2.0*max_press*( 1.0 - 1.0/time*(i-time));
+if ( k % t == 0 )  {
 
-      publisher.publish(msg_pressure);
-
-    }
-
-    else if (i < time*3)
-    {
-      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press/time*(i - time*2.0);
-      msg_pressure.press[2] = sqrt(3.0)/2.0*max_press/time*(i - time*2.0);
-
-      msg_pressure.press[3] = 1.0/2.0 *max_press/time*(i - time*2.0);
-      msg_pressure.press[5] = sqrt(3.0)/2.0*max_press/time*(i - time*2.0);
-
-      publisher.publish(msg_pressure);
-    }
-
-    else if ( i < time * 4)
-      {
-      msg_pressure.press[muscle_0] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i - 3.0*time));
-      msg_pressure.press[2] = sqrt(3.0)/2.0*( 1.0 - 1.0/time*(i - 3.0*time));
-
-      msg_pressure.press[3] = 1.0/2.0 *max_press*( 1.0 - 1.0/time*(i - 3.0*time));
-      msg_pressure.press[5] = sqrt(3.0)/2.0*max_press*( 1.0 - 1.0/time*(i - 3.0*time));
-
-      publisher.publish(msg_pressure);
-    }*/
-
-    // fixed position1
-    /*msg_pressure.press[muscle_0] = 1;
-    msg_pressure.press[4] = 1;
-    msg_pressure.press[5] = 1;
-    publisher.publish(msg_pressure);*/
-
-    //fixed position2
-    /*msg_pressure.press[muscle_0] = max_press/2;
-    msg_pressure.press[2] = max_press/4;
-    msg_pressure.press[4] = max_press/2;
-    msg_pressure.press[3] = max_press/5;
-    publisher.publish(msg_pressure);*/
+  bending_press_1 = (rand()/(float)RAND_MAX * max_press);
+}
+//
+//
+//
+//
 
     ros::spinOnce();
     loop_rate.sleep();
