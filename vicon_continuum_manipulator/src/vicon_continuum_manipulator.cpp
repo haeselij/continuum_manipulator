@@ -1,5 +1,6 @@
  #include <ros/ros.h>
 #include <probo_msgs/pressure.h>
+#include <probo_msgs/distance.h>
 #include <math.h>
 #include <Eigen3/Eigen/Dense>
 #include <stdlib.h>
@@ -95,12 +96,21 @@ return p_123;
 
 }
 
+void lengthCallback(const probo_msgs::distance& m_length)  {
+
+  if (m_length.length[0] > 950){
+    std:: cout << "Beende Versuch!!" <<endl;
+  }
+
+
+}
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "publisher");
   ros::NodeHandle nodeHandle("~");
   ros::Publisher publisher = nodeHandle.advertise<probo_msgs::pressure>("/druecke",1);
+  ros::Subscriber subscriber = nodeHandle.subscribe("/laengen", 1 , lengthCallback);
   ros::Rate loop_rate(100);
   float i = 0.0 ;
   int k = 0;
@@ -108,17 +118,39 @@ int main(int argc, char** argv)
   float time = 1000.0;
   float T;
   float max_press = 0.6;
-  int muscle_0 = 1;
+  int muscle_0 = 0;
   int muscle_1 = 6;
   int muscle_2 = 8;
+  float press_stiffness = 0.0;
 
   while (ros::ok())
   {
+
     probo_msgs::pressure msg_pressure;
     for (int j = 0; i < 12; i++)
     {
       msg_pressure.press[j] = 0;
     }
+
+// pressureskript for the k stiffness coefficient
+    k = i;
+    int t = time;
+    int press_10 = max_press*10;
+
+    if ( k % t == 0 )  {
+
+      press_stiffness = press_stiffness + 0.03;
+    }
+    msg_pressure.press[1] = press_stiffness;
+    publisher.publish(msg_pressure);
+
+    ros::spinOnce();
+    loop_rate.sleep();
+    i = i +1.0;
+
+}
+}
+
     // pressure skript single points one chamber
 
 
@@ -128,6 +160,7 @@ int main(int argc, char** argv)
 
       publisher.publish(msg_pressure);
     }
+
 
 
      else if (i < 2 * time)
@@ -302,22 +335,22 @@ int main(int argc, char** argv)
 //
 //
 
-if ( bending_press_1 <= max_press)  {
+/*if ( bending_press_1 <= max_press)  {
 
   msg_pressure.press[muscle_0] = bending_press_1;
   /*msg_pressure.press[muscle_1] = bending_press_1;
-  msg_pressure.press[muscle_2] = bending_press_1;*/
+  msg_pressure.press[muscle_2] = bending_press_1;
   publisher.publish(msg_pressure);
 }
 
 k = i;
 int t = time;
 int press_10 = max_press*10;
-/*if ( k % t == 0 )  {
+if ( k % t == 0 )  {
 
   bending_press_1 = bending_press_1 + 0.01;
 
-}*/
+}
 //
 //
 // code for bending stiffness random
@@ -328,16 +361,16 @@ int press_10 = max_press*10;
 if ( k % t == 0 )  {
 
   bending_press_1 = (rand()/(float)RAND_MAX * max_press);
-}
+}*/
 //
 //
 //
 //
-
+/*
     ros::spinOnce();
     loop_rate.sleep();
     i = i +1.0;
   }
 
   return 0;
-}
+}*/
