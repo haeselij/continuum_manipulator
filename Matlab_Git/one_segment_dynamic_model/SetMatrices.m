@@ -1,6 +1,6 @@
 
 
-function[w_H_1h, w_H_1h_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatrices(dt, q_1, q_2, q_3, v_1, v_2, v_3)
+function[w_H_1h, w_H_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatrices(dt, q_1, q_2, q_3, v_1, v_2, v_3)
    r_s = 0.01;
    r_b = 0.035;
     syms q_1_n q_2_n q_3_n v_1_n v_2_n v_3_n 
@@ -19,9 +19,9 @@ function[w_H_1h, w_H_1h_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatr
     if (q_1 == q_2 && q_2 == q_3)
         w_H_1h = [1 0 0 0; 0 1 0 0; 0 0 0 l_bar; 0 0 0 1];
         
-        dw_H_1h__dq1 = [0; 0; 1/3; 0];
-        dw_H_1h__dq2 = [0; 0; 1/3; 0];
-        dw_H_1h__dq3 = [0; 0; 1/3; 0];
+        dw_H_1h__dq1 = [1 0 0 0; 0 1 0 0; 0 0 1 1/3; 0 0 0 0];
+        dw_H_1h__dq2 = [1 0 0 0; 0 1 0 0; 0 0 1 1/3; 0 0 0 0];
+        dw_H_1h__dq3 = [1 0 0 0; 0 1 0 0; 0 0 1 1/3; 0 0 0 0];
 %         d2w_H_1h__dq1dq1 = zeros(4,1);
 %         d2w_H_1h__dq1dq2 = zeros(4,1);
 %         d2w_H_1h__dq1dq3 = zeros(4,1);
@@ -29,7 +29,7 @@ function[w_H_1h, w_H_1h_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatr
 %         d2w_H_1h__dq2dq2 = zeros(4,1);
 %         d2w_H_1h__dq3dq3 = zeros(4,1);
         
-        w_H_1h_2dot = 3*dw_H_1h__dq1*(v_dot_t + v_dot_2 + v_dot_3);
+        w_H_2dot = 3*dw_H_1h__dq1*(v_dot_1 + v_dot_2 + v_dot_3);
     else 
         % Set Transformation matrix w_H_1h
         theta = 2/3*(sqrt(q_1^2 + q_2^2 + q_3^2 - q_1*q_2 - q_1*q_3 - q_2*q_3))/r_s;
@@ -96,7 +96,7 @@ function[w_H_1h, w_H_1h_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatr
         term_chi_2 = dw_H_1h__dq2(:,4)*v_dot_2 + d2w_H_1h__dq1dq2*q_dot_1*q_dot_2 + d2w_H_1h__dq2dq2*q_dot_2*q_dot_2 + d2w_H_1h__dq2dq3*q_dot_2*q_dot_3;
         term_chi_3 = dw_H_1h__dq3(:,4)*v_dot_4 + d2w_H_1h__dq1dq3*q_dot_1*q_dot_3 + d2w_H_1h__dq2dq3*q_dot_3*q_dot_2 + d2w_H_1h__dq1dq3*q_dot_3*q_dot_3;
     
-        w_H_1h_2dot = term_chi_1 + term_chi_2 + term_chi_3;
+        w_H_2dot = term_chi_1 + term_chi_2 + term_chi_3;
     end
 
 end
