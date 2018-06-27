@@ -1,11 +1,7 @@
-dt = 0.01;
-q_1 =0.31;
-q_2 =0.3;
-q_3 = 0.32;
-v_1 = 0.2;
-v_2 = 0;
-v_3 = -0.01;
-r_s = 0.01;
+
+
+function[w_H_1h, w_H_1h_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatrices(dt, q_1, q_2, q_3, v_1, v_2, v_3)
+   r_s = 0.01;
    r_b = 0.035;
     syms q_1_n q_2_n q_3_n v_1_n v_2_n v_3_n 
     
@@ -102,3 +98,5 @@ r_s = 0.01;
     
         w_H_1h_2dot = term_chi_1 + term_chi_2 + term_chi_3;
     end
+
+end
