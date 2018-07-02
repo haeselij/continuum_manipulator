@@ -1,14 +1,18 @@
-function [q_1, q_2 q_3] = LagrangeEquation(dt, generalized_force_term,kinetic_energy_term, potential_energy_term)
-syms q_1 q_2 q_3 v_1 v_2 v_3 
-syms d_q_1 d_q_2 d_q_3 d2_q_1 d2_q_2 d2_q_3
+function [q_1, q_2, q_3, v_1, v_2, v_3] = LagrangeEquation(generalized_force_term, kinetic_energy_term, potential_energy_term, q_dot, v_1, v_2, v_3)
+syms q_1_n q_2_n q_3_n v_1_n v_2_n v_3_n 
 
-kinetic_energy_t = simplify(kinetic_energy_term);
-potential_energy_t = simplify(potential_energy_term);
-generalized_force_t = simplyfiy(generalized_force_term);
-eqn_1 = kinetic_energy_t(1)+ potential_energy_t(1) == generalized_force_t(1);
+eqn_1 = kinetic_energy_term(1) + potential_energy_term(1) == generalized_force_term(1);
+eqn_2 = kinetic_energy_term(2) + potential_energy_term(2) == generalized_force_term(2);
+eqn_3 = kinetic_energy_term(3) + potential_energy_term(3) == generalized_force_term(3);
 
-eqns = [eqn_1 eqn_12 eqn_13 eqn_21 eqn_22 eqn_23 h_eqn_11 h_eqn_12 h_eqn_13 h_eqn_21 h_eqn_22 h_eqn_23];
-vars = [x_11_2(t); x_12_2(t); x_13_2(t); x_21_2(t); x_22_2(t); x_23_2(t); q_11(t); q_12(t); q_13(t); q_21(t); q_22(t); q_23(t)];
+auxilary_eqn_1 = v_1 == q_dot(1);
+auxilary_eqn_2 = v_2 == q_dot(2);
+auxilary_eqn_3 = v_3 == q_dot(3);
+
+eqns = [eqn_1 eqn_2 eqn_3 auxilary_eqn_1 auxilary_eqn_2 auxilary_eqn_3];
+vars = [q_1_n q_2_n q_3_n v_1_n v_2_n v_3_n];
+init_guess = [0.3014, 0.3014, 0.3014, 0.25, -0.25, -0.25];
+[q_1, q_2, q_3, v_1, v_2, v_3] = vpasolve(eqns, vars, init_guess);
 
 end
 
