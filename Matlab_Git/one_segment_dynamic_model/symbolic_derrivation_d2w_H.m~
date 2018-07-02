@@ -25,7 +25,24 @@ d2_w_H_1h_dphidkappa = diff(d_w_H_1h_dphi, kappa);
 d2_w_H_1h_dphidl_bar = diff(d_w_H_1h_dphi, l_bar);
 d2_w_H_1h_dkappadl_bar = diff(d_w_H_1h_dkappa, l_bar);
 
+%%
 
+% d_w_H_dk(1:4,1) = d_w_H_1h_dphi(:,1);
+% d_w_H_dk(5:8,1) = d_w_H_1h_dphi(:,2);
+% d_w_H_dk(9:12,1) = d_w_H_1h_dphi(:,3);
+% d_w_H_dk(13:16,1) = d_w_H_1h_dphi(:,4);
+% 
+% d_w_H_dk(1:4,2) = d_w_H_1h_dkappa(:,1);
+% d_w_H_dk(5:8,2) = d_w_H_1h_dkappa(:,2);
+% d_w_H_dk(9:12,2) = d_w_H_1h_dkappa(:,3);
+% d_w_H_dk(13:16,2) = d_w_H_1h_dkappa(:,4);
+% 
+% d_w_H_dk(1:4,3) = d_w_H_1h_dl_bar(:,1);
+% d_w_H_dk(5:8,3) = d_w_H_1h_dl_bar(:,2);
+% d_w_H_dk(9:12,3) = d_w_H_1h_dl_bar(:,3);
+% d_w_H_dk(13:16,3) = d_w_H_1h_dl_bar(:,4);
+% %%
+% % 
 for i=1:3
     for k=1:3
         d_2_H_1h_dkdk_dd(i,k,:,:) = d2_w_H_1h_dphidphi*d_phi_dq(i)*d_phi_dq(k) + d2_w_H_1h_dphidkappa*d_phi_dq(i)*d_kappa_dq(k) + d2_w_H_1h_dphidl_bar*d_phi_dq(i)*d_l_bar_dq(k) + d2_w_H_1h_dphidkappa*d_kappa_dq(i)*d_phi_dq(k) + d2_w_H_1h_dkappadkappa*d_kappa_dq(i)*d_kappa_dq(k) + d2_w_H_1h_dkappadl_bar*d_kappa_dq(i)*d_l_bar_dq(k)   + d2_w_H_1h_dphidl_bar*d_l_bar_dq(i)*d_phi_dq(k) + d2_w_H_1h_dkappadl_bar*d_l_bar_dq(i)*d_kappa_dq(k) + d2_w_h_1h_dl_bard_lbar*d_l_bar_dq(i)*d_l_bar_dq(k);
@@ -35,17 +52,15 @@ for i=1:3
         d2_H_1h_dq(i,k,:,:) = d_2_H_1h_dkdk_dd(i,k,:,:) + dH_1h_dk_dd(i,k,:,:);
     end
 end
-
-
-%%
-for i=1:4   
-    d2w_H_1h__dq1dq1(i,1) = d2_H_1h_dq(1,1,i,4);
-    d2w_H_1h__dq1dq2(i,1) = d2_H_1h_dq(1,2,i,4);
-    d2w_H_1h__dq1dq3(i,1) = d2_H_1h_dq(1,3,i,4);
-    d2w_H_1h__dq2dq2(i,1) = d2_H_1h_dq(2,2,i,4);
-    d2w_H_1h__dq2dq3(i,1) = d2_H_1h_dq(2,3,i,4);
-    d2w_H_1h__dq3dq3(i,1) = d2_H_1h_dq(3,3,i,4);
-end
+% %%
+% for i=1:4   
+%     d2w_H_1h__dq1dq1(i,1) = d2_H_1h_dq(1,1,i,4);
+%     d2w_H_1h__dq1dq2(i,1) = d2_H_1h_dq(1,2,i,4);
+%     d2w_H_1h__dq1dq3(i,1) = d2_H_1h_dq(1,3,i,4);
+%     d2w_H_1h__dq2dq2(i,1) = d2_H_1h_dq(2,2,i,4);
+%     d2w_H_1h__dq2dq3(i,1) = d2_H_1h_dq(2,3,i,4);
+%     d2w_H_1h__dq3dq3(i,1) = d2_H_1h_dq(3,3,i,4);
+% end
 % %%
 % if 4*(1-2*sin(phi)^2)*(1-cos(l_bar*kappa)) == d2_w_H_1h_dphidphi(1,1)
 %     
