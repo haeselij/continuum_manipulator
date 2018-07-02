@@ -5,7 +5,7 @@ r_b = 0.026;
 A = 0.0183*0.0183*pi;  
 k=  1108.63; %[N/m]!!!!1108.63;
 q_0 = 0.3014;
-D_damp = 0;
+D_damp = 4;
 roundn = @(x,n) round(x*10^n)./10^n;
 % Define position of muscle in head frame @AMIR WIR KOMMST DU HIER AUF
 % r_b/2?!!
@@ -19,8 +19,8 @@ h1_F_active_B2 = p_2*A*[0; 0; 1; 0];
 h1_F_active_B3 = p_3*A*[0; 0; 1; 0];
 
 h1_F_passive_B1 = -(k*(q_1 - q_0) + D_damp*q_dot(1) )*[0; 0; 1; 0];  
-h1_F_passive_B2 = -(k*(q_2 - q_0) + D_damp*q_dot(2))*[0; 0; 1; 0];
-h1_F_passive_B3 = -(k*(q_3 - q_0) + D_damp*q_dot(3) )*[0; 0; 1; 0];
+h1_F_passive_B2 = -(k*(q_2 - q_0) + D_damp*v_dot(2))*[0; 0; 1; 0];
+h1_F_passive_B3 = -(k*(q_3 - q_0) + D_damp*v_dot(3) )*[0; 0; 1; 0];
 
 h1_F_B1 = h1_F_active_B1 + h1_F_passive_B1; 
 h1_F_B2 = h1_F_active_B2 + h1_F_passive_B2;
