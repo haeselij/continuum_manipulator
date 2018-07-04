@@ -1,8 +1,6 @@
-
-function[w_H_1h, w_H_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3, q_dot, kappa, l_bar, phi] = SetMatrices(dt, q_1, q_2, q_3, v_1, v_2, v_3)
-   r_s = 0.01;
+ r_s = 0.01;
    r_b = 0.026;
-   syms q_1_n q_2_n q_3_n v_1_n v_2_n v_3_n 
+   syms q_1_n q_2_n q_3_n v_1_n v_2_n v_3_n theta phi kappa l_bar dt q_1 q_2 q_3 v_1 v_2 v_3
    roundn = @(x,n) round(x*10^n)./10^n;
    
    v_dot_1 = (1/dt)*(v_1_n - v_1);
@@ -17,32 +15,32 @@ function[w_H_1h, w_H_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3, q_dot, kappa
     
    q_dot = [q_dot_1; q_dot_2; q_dot_3];
     
-   l_bar = (q_1 + q_2 + q_3)/3;
-   theta = 2/3*(sqrt(q_1^2 + q_2^2 + q_3^2 - q_1*q_2 - q_1*q_3 - q_2*q_3))/r_b;
-   kappa = theta/l_bar;
-   k_min = 10^(-5);
-   
-   if (kappa < k_min)
-        w_H_1h = [1 0 0 0; 0 1 0 0; 0 0 1 l_bar; 0 0 0 1];
-           kappa = k_min;
-           q_1 = q_1 - 0.001;
-%         dw_H_1h__dq1 = [0 0 0 0; 0 0 0 0; 0 0 0 1/3 ; 0 0 0 0]; 
-%         dw_H_1h__dq2 = [0 0 0 0; 0 0 0 0; 0 0 0 1/3 ; 0 0 0 0];  
-%         dw_H_1h__dq3 = [0 0 0 0; 0 0 0 0; 0 0 0 1/3 ; 0 0 0 0];
-%          
-%         w_H_2dot = 3*dw_H_1h__dq1(:,4)*(v_dot_1 + v_dot_2 + v_dot_3);
-        
-        phi = 0;
-    else 
+%    l_bar = (q_1 + q_2 + q_3)/3;
+%    theta = 2/3*(sqrt(q_1^2 + q_2^2 + q_3^2 - q_1*q_2 - q_1*q_3 - q_2*q_3))/r_b;
+%    kappa = theta/l_bar;
+%    k_min = 10^(-5);
+%    
+%    if (kappa < k_min)
+%         w_H_1h = [1 0 0 0; 0 1 0 0; 0 0 1 l_bar; 0 0 0 1];
+%            kappa = k_min;
+%            q_1 = q_1 - 0.001;
+% %         dw_H_1h__dq1 = [0 0 0 0; 0 0 0 0; 0 0 0 1/3 ; 0 0 0 0]; 
+% %         dw_H_1h__dq2 = [0 0 0 0; 0 0 0 0; 0 0 0 1/3 ; 0 0 0 0];  
+% %         dw_H_1h__dq3 = [0 0 0 0; 0 0 0 0; 0 0 0 1/3 ; 0 0 0 0];
+% %          
+% %         w_H_2dot = 3*dw_H_1h__dq1(:,4)*(v_dot_1 + v_dot_2 + v_dot_3);
+%         
+%         phi = 0;
+%     else 
         % Set Transformation matrix w_H_1h
-        phi = atan2((sqrt(3)*(q_3 - q_2)),(q_2 + q_3 - 2*q_1));
+%         phi = atan2((sqrt(3)*(q_3 - q_2)),(q_2 + q_3 - 2*q_1));
         
         w_H_1h_1 = [cos(phi)^2*(cos(theta) - 1) + 1, sin(phi)*cos(phi)*(cos(theta) - 1), cos(phi)*sin(theta), (cos(phi)*(1 - cos(theta)))/kappa];
         w_H_1h_2 = [sin(phi)*cos(phi)*(cos(theta) - 1), cos(phi)^2*(1 - cos(theta)) + cos(theta), sin(phi)*sin(theta), (sin(phi)*(1 - cos(theta)))/kappa];
         w_H_1h_3 = [-cos(phi)*sin(theta), -sin(phi)*sin(theta), cos(theta), sin(theta)/kappa];
         w_H_1h_4 = [0, 0, 0, 1];
         w_H_1h = [w_H_1h_1; w_H_1h_2; w_H_1h_3; w_H_1h_4];
-   end
+  
 %% 3rd try jetzt mues es klappe
 
 
@@ -236,4 +234,3 @@ function[w_H_1h, w_H_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3, q_dot, kappa
             term_chi_2 = dw_H_1h__dq2(:,4)*v_dot_2 + d2w_H_1h__dq1dq2*q_dot_1*q_dot_2 + d2w_H_1h__dq2dq2*q_dot_2*q_dot_2 + d2w_H_1h__dq2dq3*q_dot_2*q_dot_3;
             term_chi_3 = dw_H_1h__dq3(:,4)*v_dot_3 + d2w_H_1h__dq1dq3*q_dot_1*q_dot_3 + d2w_H_1h__dq2dq3*q_dot_3*q_dot_2 + d2w_H_1h__dq3dq3*q_dot_3*q_dot_3;
             w_H_2dot = (term_chi_1 + term_chi_2 + term_chi_3);
-end

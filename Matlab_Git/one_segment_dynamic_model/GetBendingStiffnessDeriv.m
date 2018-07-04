@@ -1,6 +1,6 @@
 function [bending_stiffness_derivative] = GetBendingStiffnessDeriv(p_1, p_2, p_3, theta, phi,q_1,q_2,q_3)
 r_b = 0.026; %[m]
-C_1 = .267; % [Nm/rad] % 2.64
+C_1 = 2.64; % [Nm/rad] % 2.64
 C_2 = 0.5140; %TODO!!!
 C_01 = 0; %TODO!!!
 C_02 = 0; %TODO!!!

@@ -1,12 +1,11 @@
 
 
 %% Plot pressure inputs.
-dt = 0.0005;
-pressure_time = zeros(1500,1);
+dt = 0.00005;
+pressure_time = zeros(1000,1);
 
-for i = 1:1499
-    pressure_time(i) = -0.0005 +dt*i;
-    l_bar(i) = (q_container(1,i) + q_container(2,i) + q_container(3,i))/3;
+for i = 1000
+    pressure_time(i) = -0.00005 +dt*i;
 end
 % 
 % figure; 
@@ -18,12 +17,12 @@ end
 % axis([0 0.088 0 0.15])
 
 figure; 
-plot(pressure_time, q_container(1,1:1500), pressure_time, q_container(2,1:1500), pressure_time, q_container(3,1:1500))
+plot(pressure_time, q_(1,:), pressure_time, q_(2,:), pressure_time, q_(3,:))
 title('calculated muscle lengths p2 = 0.25')
 xlabel('Time [s]')
 ylabel('length [m]')
 legend('q1','q2','q3')
-axis([0 1 0 0.6])
+axis([0 0.5 0 0.6])
 
 % r_b = 0.026;
 % 

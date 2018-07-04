@@ -14,9 +14,9 @@ function [potential_energy_term] = GetPotentialEnergyTerm(q_1, q_2, q_3, dw_H_1h
 %     
 % end        
 
-    potential_energy_q1 = m*w_g.'*dw_H_1h__dq1(:,4) + (bending_stiffness_derivative(1)); %C*l_bar%% WIE IST HIER DAS VORZEICHEN??
-    potential_energy_q2 = m*w_g.'*dw_H_1h__dq2(:,4) + (bending_stiffness_derivative(2)); %+ d_M_bend_dq1;
-    potential_energy_q3 = m*w_g.'*dw_H_1h__dq3(:,4) + (bending_stiffness_derivative(3));% + d_M_bend_dq3;
+    potential_energy_q1 = -m*w_g.'*dw_H_1h__dq1(:,4) + (bending_stiffness_derivative(1)); %C*l_bar%% WIE IST HIER DAS VORZEICHEN??
+    potential_energy_q2 = -m*w_g.'*dw_H_1h__dq2(:,4) + (bending_stiffness_derivative(2)); %+ d_M_bend_dq1;
+    potential_energy_q3 = -m*w_g.'*dw_H_1h__dq3(:,4) + (bending_stiffness_derivative(3));% + d_M_bend_dq3;
 
     potential_energy_q1 = roundn(potential_energy_q1,10);
     potential_energy_q2 = roundn(potential_energy_q2,10);

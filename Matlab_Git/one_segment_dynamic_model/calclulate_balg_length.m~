@@ -13,12 +13,12 @@
 %  
 %  
 % end
-
-figure;
-plot(length_time,q_)
-xlabel('time [s]')
-ylabel('balg length [m]')
-legend('q_1','q_2','q_3')
+% 
+% figure;
+% plot(length_time,q_)
+% xlabel('time [s]')
+% ylabel('balg length [m]')
+% legend('q_1','q_2','q_3')
 % 
 % function [x,theta, phi] = GetXThetaPhi(q_1, q_2, q_3)
 %     theta = (2/3)*((sqrt(q_1^2 + q_2^2 + q_3^2 - q_1*q_2 - q_1*q_3 - q_2*q_3))/0.01);

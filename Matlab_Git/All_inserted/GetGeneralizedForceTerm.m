@@ -1,14 +1,9 @@
 
-function [generalized_force_term] = GetGeneralizedForceTerm(w_H_1h, dw_H_1h__dq1,dw_H_1h__dq2, dw_H_1h__dq3, q_1, q_2, q_3, p_1, p_2, p_3, q_dot)
-syms C_1 D_damp k_spline k
-    r_b = 0.026;
-    A = 0.0183*0.0183*pi;  
-    %k = 1108.63;% "real value" -> 1108.63; %[N/m]
-    q_0 = 0.3014;
-
-    l_bar = (q_1 + q_2 + q_3)/3;
-%     D_damp =100;
-%     roundn = @(x,n) round(x*10^n)./10^n;
+function [generalized_force_term] = GetGeneralizedForceTerm(w_H_1h, dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3)
+    syms m q_0 A k D_damp_spline D_damp q_1_dot q_2_dot q_3_dot v_1_dot v_2_dot v_3_dot phi theta kappa r_b q_1 q_2 q_3 p_1 p_2 p_3 k_spline;
+    
+    l_bar = theta*kappa;
+    l_bar_dot = (q_1_dot + q_2_dot + q_3_dot)/3;
     
     % Define position of muscle in head frame
     h1_r_B1 = [r_b; 0; 0; 1];
@@ -17,19 +12,20 @@ syms C_1 D_damp k_spline k
     h1_r_m = [0; 0; 0; 1];
 
     % Define forces on muscles in head frame
-    h1_F_active_B1 = p_1*A*[0; 0; 1; 1];
-    h1_F_active_B2 = p_2*A*[0; 0; 1; 1];
-    h1_F_active_B3 = p_3*A*[0; 0; 1; 1];
+    h1_F_active_B1 = p_1*A*[0; 0; 1; 0];
+    h1_F_active_B2 = p_2*A*[0; 0; 1; 0];
+    h1_F_active_B3 = p_3*A*[0; 0; 1; 0];
 
-    h1_F_passive_B1 = -(k*(q_1 - q_0) + D_damp*q_dot(1))*[0; 0; 1; 1];  
-    h1_F_passive_B2 = -(k*(q_2 - q_0) + D_damp*q_dot(2))*[0; 0; 1; 1];
-    h1_F_passive_B3 = -(k*(q_3 - q_0) + D_damp*q_dot(3))*[0; 0; 1; 1];
+    h1_F_passive_B1 = -(k*(q_1 - q_0) + D_damp*q_1_dot)*[0; 0; 1; 0];  
+    h1_F_passive_B2 = -(k*(q_2 - q_0) + D_damp*q_2_dot)*[0; 0; 1; 0];
+    h1_F_passive_B3 = -(k*(q_3 - q_0) + D_damp*q_3_dot)*[0; 0; 1; 0];
 
     h1_F_B1 = h1_F_active_B1 + h1_F_passive_B1; 
     h1_F_B2 = h1_F_active_B2 + h1_F_passive_B2;
     h1_F_B3 = h1_F_active_B3 + h1_F_passive_B3;
     
-    h1_F_spline = -k_spline*(l_bar - q_0)*[0; 0; 1; 1];
+    h1_F_spline = -(k_spline*(l_bar - q_0) + D_damp_spline*l_bar_dot)*[0; 0; 1; 0];
+    
     % Transform forces w.r.t world frame
     w_F_B1 = w_H_1h*h1_F_B1;
     w_F_B2 = w_H_1h*h1_F_B2;

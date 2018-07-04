@@ -1,13 +1,25 @@
 %% Auswertung Balglängen der Messung
-q_11_set = length_total(1,:);
-q_12_set = length_total(2,:);
-q_13_set = length_total(3,:);
+% q_11_set = length_total(1,:);
+% q_12_set = length_total(2,:);
+% q_13_set = length_total(3,:);
+q_11_set = [ 571 657 751 825];
+q_12_set = [401 385 356 337];
+q_13_set = [413 374 347 320];
+length_size = 4;
 w_H_t_total = zeros(4,4,length_size);
-
+l_bar_min = 0.3014;
+l_bar_max = 0.3014;
 for i = 1 : length_size
-    dw_1 = 0.3014 -0.0384/1024*(q_11_set(i)-q_11_set(1));
-    dw_2 = 0.3014 -0.0384/1024*(q_12_set(i)-q_12_set(1));
-    dw_3 = 0.3014 -0.0384/1024*(q_13_set(i)- q_13_set(1));
+    dw_1 = 0.3014 +0.0384/1024*(q_11_set(i) - 462);
+    dw_2 = 0.3014 +0.0384/1024*(q_12_set(i) - 441);
+    dw_3 = 0.3014 +0.0384/1024*(q_13_set(i) - 435);
+    l_bar(i) = (dw_1 + dw_2 + dw_3)/3; 
+%     if l_bar(i) < l_bar_min
+%         l_bar_min = l_bar(i)
+%     end
+%     if l_bar(i) > l_bar_max
+%         l_bar_max = l_bar(i)
+%     end
  [x_, theta_, phi_] =  GetXThetaPhi(dw_1, dw_2, dw_3);
  [q_(1,i), q_(2,i), q_(3,i)] = GetBalgLength(theta_, phi_);
  
