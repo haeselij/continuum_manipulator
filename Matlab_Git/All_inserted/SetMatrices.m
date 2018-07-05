@@ -2,7 +2,7 @@
 function[w_H_1h, w_H_2dot,dw_H_1h__dq1, dw_H_1h__dq2, dw_H_1h__dq3] = SetMatrices()
     syms q_1_dot q_2_dot q_3_dot v_1_dot v_2_dot v_3_dot phi theta kappa r_b q_1 q_2 q_3; 
 
-    l_bar = theta*kappa;
+    l_bar = theta/kappa;
 
     %     w_H_1h_1 = [cos(phi)^2*(cos(theta) - 1) + 1, sin(phi)*cos(phi)*(cos(theta) - 1), cos(phi)*sin(theta), (cos(phi)*(1 - cos(theta)))/kappa];
     %     w_H_1h_2 = [sin(phi)*cos(phi)*(cos(theta) - 1), cos(phi)^2*(1 - cos(theta)) + cos(theta), sin(phi)*sin(theta), (sin(phi)*(1 - cos(theta)))/kappa];
