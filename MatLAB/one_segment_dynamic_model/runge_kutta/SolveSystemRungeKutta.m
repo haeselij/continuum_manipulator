@@ -4,7 +4,7 @@ function [q, v] = SolveSystemRungeKutta(D_damp_spline, m, g, C_ohne_l_bar, q_0, 
     theta = 2/3*(sqrt(q_1^2 + q_2^2 + q_3^2 - q_1*q_2 - q_1*q_3 - q_2*q_3))/r_b;
     kappa = theta/l_bar;
     phi = atan2((sqrt(3)*(q_3 - q_2)),(q_2 + q_3 - 2*q_1));
-    C = C_ohne_l_bar*l_bar;
+    C = C_ohne_l_bar;
     
     if(kappa < kappa_crit)
         kappa = kappa_crit;
@@ -30,6 +30,6 @@ function [q, v] = SolveSystemRungeKutta(D_damp_spline, m, g, C_ohne_l_bar, q_0, 
 
     solution = vpasolve(eqns, vars, initGuess);
 
-    q = [solution.q_1_dot; solution.q_2_dot; solution.q_2_dot];
+    q = [solution.q_1_dot; solution.q_2_dot; solution.q_3_dot];
     v = [solution.v_1_dot; solution.v_2_dot; solution.v_3_dot]; 
 end
