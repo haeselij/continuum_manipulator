@@ -24,6 +24,7 @@ time = zeros(1, numOfIterations);
 
 q_(:,1) = [0.3014; 0.3014; 0.3014];
 v_(:,1) = [0; 0; 0];
+
 for i=1:5000
     p_(1,i) = 0;
     p_(2,i) = 0.5*10^5/5000*i;
@@ -47,6 +48,7 @@ for i=15001:20000
     p_(3,i) = 0.5*10^5*(1 - 1/5000*(i-15000));
 end
 
+
 for i = 1:numOfIterations
     tic;
     q_1_dot = 1/dt*(q_1_n - q_(1,i));
@@ -56,8 +58,9 @@ for i = 1:numOfIterations
     v_1_dot = 1/dt*(v_1_n - v_(1,i));
     v_2_dot = 1/dt*(v_2_n - v_(2,i));
     v_3_dot = 1/dt*(v_3_n - v_(3,i));
-    
+
     [q_(:,i+1), v_(:,i+1)] = SolveSystemEulerForward(dt ,D_damp_spline_, m_, g_, C_ohne_l_bar_, q_0_, A_, k_, D_damp_, r_b_, k_spline_, q_(1,i), q_(2,i), q_(3,i), v_(1,i), v_(2,i), v_(3,i), q_1_dot, q_2_dot, q_3_dot, v_1_dot, v_2_dot, v_3_dot, p_(1,i), p_(2,i), p_(3,i));
+
     time(1,i) = dt*i - dt;
     toc
 end

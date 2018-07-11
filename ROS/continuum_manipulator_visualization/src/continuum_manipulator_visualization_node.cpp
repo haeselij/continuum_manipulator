@@ -12,11 +12,8 @@ Muscle::Muscle(ros::NodeHandle& nodeHandle) : nodeHandle(nodeHandle)
   muscle_pub=nodeHandle.advertise<visualization_msgs::Marker>("visualization_marker", 10);
   cylinder_pub=nodeHandle.advertise<visualization_msgs::Marker>("visualization_marker_cylinder", 10);
 
-  m_length_sub = nodeHandle.subscribe("/laengen", 1 , &Muscle::lengthCallback, this);
+  m_length_sub = nodeHandle.subscribe("/lengths", 1 , &Muscle::lengthCallback, this);
   initializeMatrices();
-
-
-
 }
 } /*namespace*/
 
@@ -24,8 +21,7 @@ int main( int argc, char** argv )
 {
   ros::init(argc, argv, "continuum_manipulator_visualization");
   ros::NodeHandle nodeHandle("~");
-
-muscle_ns:: Muscle muscle0(nodeHandle);
+  muscle_ns:: Muscle muscle0(nodeHandle);
   ros::Rate r(1000000);
 
   while(ros::ok())  {
