@@ -109,3 +109,4 @@ xlabel('time [s]')
 ylabel('pressure [bar]')
 legend('p_1', 'p_2', 'p_3')
 axis([0 25 0 0.6])
+
