@@ -8,7 +8,7 @@
 #include <probo_msgs/angle_ref.h>
 #include <probo_msgs/distance.h>
 #include <std_msgs/Int32.h>
-
+#include <std_msgs/Float32MultiArray.h>
 
 namespace muscle_ns{
 
@@ -17,8 +17,7 @@ class Muscle {
     Muscle (ros::NodeHandle& nodeHandle);
 
   private:
-  //  void drawMuscle(Eigen::MatrixXf H, int id, float length, float width);
-    void lengthCallback(const probo_msgs::distance& m_length);
+    void lengthCallback(const std_msgs::Float32MultiArray& m_length);
     float arctan2(float y, float x);
 
     void toQuaternion(Eigen::Vector4f& quat, Eigen::Matrix4f H);
@@ -49,8 +48,5 @@ class Muscle {
     Eigen::Vector4f X_AXIS;
     Eigen::Vector4f Y_AXIS;
     Eigen::Vector4f Z_AXIS;
-
-
-
 };
 }/*namespace*/
