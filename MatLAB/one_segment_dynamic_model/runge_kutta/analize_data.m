@@ -1,26 +1,31 @@
 %% Analize data
 
 %%  interpolate data
-exp_1_start = 1070;
-exp_1_end = 4722;
+exp_1_start = 1067;
+exp_1_end =5655;
 
-exp_2_start = 6025; %-32.82
-exp_2_end = 9596;
-
-exp_3_start = 14353;
-exp_3_end = 18040;
-q_exp_1(:,:) = q_exp(:,exp_1_start:exp_1_end);
+exp_2_start = 13948;
+exp_2_end = 17618;
+% exp_1_start = 1070;
+% exp_1_end = 4722;
+% 
+% exp_2_start = 6025; %-32.82
+% exp_2_end = 9596;
+% 
+% exp_3_start = 14353;
+% exp_3_end = 18040;
+q_exp_1(:,:) = q_exp(:,exp_2_start:exp_2_end);
 q_model_1(:,:) = q_; 
 
-exp_1_time = length_time(exp_1_start:exp_1_end) - length_time(exp_1_start);
+exp_1_time = length_time(exp_2_start:exp_2_end) - length_time(exp_2_start);
 exp_1_time_converted = seconds(exp_1_time);
 
 for i = 1 : size(q_model_1, 2)
-   model_1_time(i) = 0.001*i - 0.001; 
+   model_1_time(i) = 0.0005*i - 0.0005; 
 end
 model_1_time_converted = seconds(model_1_time.');
 
-ex_1_timetable = timetable(exp_1_time_converted, q_exp_1(1,:).',q_exp_1(2,:).', q_exp_1(3,:).');
+ex_1_timetable = timetable(exp_1_time_converted, q_exp_1(2,:).',q_exp_1(1,:).', q_exp_1(3,:).');
 mod_1_timetable = timetable(model_1_time_converted, q_model_1(1,:).',q_model_1(2,:).', q_model_1(3,:).');
 
 ex_1_timetable.Properties.VariableNames = {'q_1exp','q_2exp','q_3exp'};
@@ -54,28 +59,30 @@ position_std = std(position_error_absv')
 %%
 figure;
 plot(sync_time_table.exp_1_time_converted, exp_tip(1,:),sync_time_table.exp_1_time_converted, mod_tip(1,:))
-title('comparison x coordinate')
+%title('comparison x coordinate')
 xlabel('time [s]')
 ylabel('x [m]')
 legend('experiment', 'model')
-axis([0.0 20.0 -0.2  0.1])
-
+ylim([-0.2 0.1])
+set(gca,'fontsize',12)
 %%
 figure;
 plot(sync_time_table.exp_1_time_converted, exp_tip(2,:),sync_time_table.exp_1_time_converted, mod_tip(2,:))
-title('comparison y coordinate')
+%title('comparison y coordinate')
 xlabel('time [s]')
 ylabel('y [m]')
 legend('experiment', 'model')
-axis([0.0 20.0 -0.2  0.1])
+set(gca,'fontsize',12)
+ylim([-0.2 0.1])
 %%
 figure;
 plot(sync_time_table.exp_1_time_converted, exp_tip(3,:),sync_time_table.exp_1_time_converted, mod_tip(3,:))
-title('comparison z coordinate')
+%title('comparison z coordinate')
 xlabel('time [s]')
 ylabel('z [m]')
 legend('experiment', 'model')
-
+set(gca,'fontsize',12)
+ylim([0.1 0.4])
 %%
 % figure;
 % plot(sync_time_table.exp_1_time_converted,muscle_error_vector)
@@ -86,14 +93,19 @@ plot(sync_time_table.exp_1_time_converted, sync_time_table.q_1exp, sync_time_tab
 
 figure;
 plot(sync_time_table.exp_1_time_converted, exp_theta, sync_time_table.exp_1_time_converted, mod_theta)
-title('comparison z coordinate')
+%title('comparison z coordinate')
 xlabel('time [s]')
-ylabel('z [m]')
+ylabel('\theta [rad]')
 legend('experiment', 'model')
 
 %%
+figure;
 plot(sync_time_table.exp_1_time_converted, sync_time_table.q_1mod, sync_time_table.exp_1_time_converted, sync_time_table.q_2mod, sync_time_table.exp_1_time_converted, sync_time_table.q_3mod)
-
+xlabel('time [s]')
+ylabel('length [m]')
+legend('q_1','q_2','q_3')
+set(gca,'fontsize', 12);
+ylim([0.27 0.33])
 %%
 function [x,y,z,w, theta, phi, l_bar] = get_tip(q_11, q_12, q_13) 
     if q_11 == q_12 && q_12 == q_13

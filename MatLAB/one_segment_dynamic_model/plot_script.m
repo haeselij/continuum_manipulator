@@ -13,9 +13,9 @@ title('calculated muscle lengths p_{2} = 0.125,0.25,0.375,0.5,0')
 xlabel('Time [s]')
 ylabel('length [m]')
 
-axis([0 50 0.25 0.35])
+axis([0 25 0.25 0.35])
 legend('q_{1}','q_{2}','q_{3}')
-
+%%
 hold on 
 plot(time, l_bar)
 %%

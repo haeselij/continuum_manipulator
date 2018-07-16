@@ -19,7 +19,7 @@ all_static_positions_stored = false;
 
  for j = 1:size(interpolated_time_table_fast,1)
      
-        if(interpolated_time_table_fast.p1(j) > 0.1 | interpolated_time_table_fast.p2(j) > 0.1 | interpolated_time_table_fast.p3(j) > 0.1)
+        if(interpolated_time_table_fast.p1(j) > 0.1 || interpolated_time_table_fast.p2(j) > 0.1 | interpolated_time_table_fast.p3(j) > 0.1)
             
             for i = 0:num_of_presssure_increments
                 
@@ -85,8 +85,8 @@ function [q, theta, phi_muscle, kappa] = GetBalgLength(s)
     else
         
         q(1, 1) = theta*(1/kappa - r_b*cos(phi + phi_0));
-        q(2, 1) = theta*(1/kappa - r_b*cos(phi + 2*pi/3 + phi_0));
-        q(3, 1) = theta*(1/kappa - r_b*cos(phi + 4*pi/3 + phi_0));
+        q(2, 1) = theta*(1/kappa - r_b*cos(phi + 4*pi/3 + phi_0));
+        q(3, 1) = theta*(1/kappa - r_b*cos(phi + 2*pi/3 + phi_0));
         
     end
 end

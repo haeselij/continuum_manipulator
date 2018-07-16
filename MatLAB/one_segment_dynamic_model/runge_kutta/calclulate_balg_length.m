@@ -19,19 +19,19 @@ for i = 1 : length_size
  end
 %%
 % %length_time = length_time -1;
- length_time_1 = length_time -8.07;
+ length_time_1 = length_time -4 - 1.8;%-8.07;
 %length_time_2 = length_time -32.82;
- length_time_3 = length_time -78.29;
+ length_time_3 = length_time -78.29 +2.3;
 % 
 % %%
 figure;
-plot(length_time_1,q_exp(2,:),length_time_1, q_exp(1,:),length_time_1, q_exp(3,:))
+plot(length_time_3,q_exp(2,:),length_time_3, q_exp(1,:),length_time_3, q_exp(3,:))
 %title('experimental muscle lengths')
 xlabel('time [s]')
 ylabel('length [m]')
 legend('q_1','q_2','q_3')
 set(gca,'fontsize', 12);
-axis([0 25 0.25 0.35])
+axis([0 20 0.28 0.33])
 
 
 
