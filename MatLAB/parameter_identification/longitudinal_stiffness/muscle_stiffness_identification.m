@@ -1,4 +1,5 @@
 %% Filter out steady state values
+
 j = 1;
 t = 0;
 t_2 = 0;
@@ -37,7 +38,7 @@ ylabel(' \delta draw wire measurement [mm]')
 %% calculate k
 
 p_l_ratio = polyfit(pressure_stiffness(2:12),length_stiffness(2:12),1);
-A = pi * 0.0183^2;
-k = A/(p_l_ratio(1));
+
+k_M = (pi * 0.0183^2)/(p_l_ratio(1));
 
 

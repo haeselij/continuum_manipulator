@@ -31,10 +31,10 @@ plot(time,displacement,'*')
 t = 0:0.1:5;
 f = 0.0068*exp(-t*1.151);
 plot(t,f)
-axis([-0.1 4 -0.002 0.007 ])
+axis([0 5 -0.002 0.007 ])
 set(gca,'fontsize', 12);
 ylabel('displacement [m]')
-xlabel('time [s]')
+
 
 function [x,y,z,w, theta_1, phi_1] = get_tip(q_11, q_12, q_13, i) 
     if (q_11 == q_12 && q_12 == q_13)

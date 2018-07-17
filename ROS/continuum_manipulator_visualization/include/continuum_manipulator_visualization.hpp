@@ -33,8 +33,8 @@ class Muscle {
     visualization_msgs::Marker marker_muscle;
     const int resolution = 400;
     float muscle_length[3];
-    const float muscle_dia = 0.045;
-    const float r_mm = 0.03;
+    const float muscle_dia = 0.035;
+    const float r_mm = 0.026;
     float pos_tip[9];
     float theta;
     float phi;
