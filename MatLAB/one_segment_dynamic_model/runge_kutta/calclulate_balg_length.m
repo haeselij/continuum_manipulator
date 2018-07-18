@@ -31,7 +31,7 @@ xlabel('time [s]')
 ylabel('length [m]')
 legend('q_1','q_2','q_3')
 set(gca,'fontsize', 12);
-axis([0 20 0.28 0.33])
+axis([0 20 0.27 0.33])
 
 
 

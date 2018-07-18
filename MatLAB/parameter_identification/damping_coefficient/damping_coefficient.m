@@ -21,8 +21,9 @@ time = [1.0015; 1.377; 1.725; 2.09; 2.438; 2.806; 3.134; 3.507; 3.863;4.211];
 time = time-1; %time offset -> set start time to zero
 
 displacement = [0.006812; 0.004562; 0.002875; 0.001862;0.001262; 0.000925; 0.000625; 0.0004375; 0.00025;0];
+
 D_damp = 2*3*1.151*(m*k)^0.5; %values from exponential fitting in matlab (ctftool)
-%%
+
 figure;
 hold on;
 plot(length_time(1:534)-1, dw_1(:) - 0.2962)
@@ -30,8 +31,10 @@ plot(time,displacement,'*')
 t = 0:0.1:5;
 f = 0.0068*exp(-t*1.151);
 plot(t,f)
-axis([0 5 -0.002 0.007 ])
+axis([-0.1 4 -0.002 0.007 ])
 set(gca,'fontsize', 12);
+ylabel('displacement [m]')
+xlabel('time [s]')
 
 function [x,y,z,w, theta_1, phi_1] = get_tip(q_11, q_12, q_13, i) 
     if (q_11 == q_12 && q_12 == q_13)

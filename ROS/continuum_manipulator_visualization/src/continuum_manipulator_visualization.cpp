@@ -21,25 +21,23 @@ namespace muscle_ns{
             (muscle_length[0]*muscle_length[1] + muscle_length[0]*muscle_length[2] + muscle_length[1]*muscle_length[2]))/r_mm;
     phi = arctan2(sqrt(3)*(muscle_length[2] - muscle_length[1]), (muscle_length[1] + muscle_length[2] -2*muscle_length[0]));
 
+    //draw base cylinder
     visualization_msgs::Marker cylinder;
     cylinder.type = visualization_msgs::Marker::CYLINDER;
     cylinder.header.frame_id  = "/my_frame";
     cylinder.header.stamp = ros::Time::now();
     cylinder.ns =  "Muscle";
 
-      // set scale
     cylinder.id = 1 ;
     cylinder.scale.x =.10;
     cylinder.scale.y =.10;
     cylinder.scale.z =.02;
 
-      //set colors
     cylinder.color.a =1.0;
     cylinder.color.r =1;
     cylinder.color.g =0;
     cylinder.color.b = 0;
 
-    //set position
     cylinder.pose.position.x = 0;
     cylinder.pose.position.y = 0;
     cylinder.pose.position.z = -0.010;
@@ -49,7 +47,7 @@ namespace muscle_ns{
     cylinder.pose.orientation.z = 0;
     cylinder.pose.orientation.w = 0;
 
-    cylinder.action=visualization_msgs::Marker::ADD;
+    cylinder.action = visualization_msgs::Marker::ADD;
     cylinder_pub.publish(cylinder);
 
     for (int i = 0; i < 3; i++) { // draw all 3 muscles
@@ -64,13 +62,11 @@ namespace muscle_ns{
       sphere_list.pose.orientation.w = 1.0;
       sphere_list.id = 2 + i;
 
-      //set colors
       sphere_list.color.a = 1.0;
       sphere_list.color.r = 1;
       sphere_list.color.g = 1;
       sphere_list.color.b = 1;
 
-      //set scale
       sphere_list.scale.x = 0.035;
       sphere_list.scale.y = 0.035;
       sphere_list.scale.z = 0.035;
@@ -78,29 +74,28 @@ namespace muscle_ns{
       geometry_msgs::Point p;
 
 
-          for (int j = 0; j < resolution; j++) {
+      for (int j = 0; j < resolution; j++)  {
 
-          createTransform(H_muscle[i][j], theta/(resolution-1)*j, phi, muscle_length[i]/(resolution-1)*j);
-          //drawMuscle(H_def*H_muscle[i][j], 4+i*resolution+j, muscle_length[i]/resolution, muscle_dia);
-          Eigen::Vector4f pos = H_def*H_muscle[i][j]*ZERO_ONE;
-          sphere_list.header.stamp = ros::Time::now();
-          sphere_list.ns = "Muscle";
+        createTransform(H_muscle[i][j], theta/(resolution-1)*j, phi, muscle_length[i]/(resolution-1)*j);
+        Eigen::Vector4f pos = H_def*H_muscle[i][j]*ZERO_ONE;
+        sphere_list.header.stamp = ros::Time::now();
+        sphere_list.ns = "Muscle";
 
-          p.x = pos(0);
-          p.y = pos(1);
-          p.z = pos(2);
+        p.x = pos(0);
+        p.y = pos(1);
+        p.z = pos(2);
 
-          sphere_list.action=visualization_msgs::Marker::ADD;
+        sphere_list.action=visualization_msgs::Marker::ADD;
 
-          if ( j < resolution - 14){
+        if ( j < resolution - 14)  {
 
-            sphere_list.points.push_back(p);
-            }
-
-          pos_tip[3*i + 0] = pos(0);
-          pos_tip[3*i + 1] = pos(1);
-          pos_tip[3*i + 2] = pos(2);
+          sphere_list.points.push_back(p);
           }
+
+        pos_tip[3*i + 0] = pos(0);
+        pos_tip[3*i + 1] = pos(1);
+        pos_tip[3*i + 2] = pos(2);
+        }
 
     muscle_pub.publish(sphere_list);
     }
@@ -109,6 +104,7 @@ namespace muscle_ns{
   pos_tip[1] = (pos_tip[1] + pos_tip[4] +pos_tip[7])/3;
   pos_tip[2] = (pos_tip[2] + pos_tip[5] +pos_tip[8])/3;
 
+ //draw tip cylinder
   cylinder.pose.position.x = pos_tip[0];
   cylinder.pose.position.y = pos_tip[1];
   cylinder.pose.position.z = pos_tip[2];
@@ -126,6 +122,7 @@ namespace muscle_ns{
 
   void Muscle::createTransform(Eigen::Matrix4f& H, float theta, float phi, float l)  {
   if(theta == 0)  { // avoid divide by zero
+
     H(0,0) = 1;
     H(0,1) = 0;
     H(0,2) = 0;
@@ -147,6 +144,7 @@ namespace muscle_ns{
     H(3,3) = 1;
   }
   else  {
+
     H(0,0) = cos(phi)*cos(phi)*(cos(theta)-1) + 1;
     H(0,1) = cos(phi)*sin(phi)*(cos(theta)-1);
     H(0,2) = cos(phi)*sin(theta);
@@ -166,11 +164,13 @@ namespace muscle_ns{
     H(3,1) = 0;
     H(3,2) = 0;
     H(3,3) = 1;
+
   }
   }
 
 
 void Muscle::initializeMatrices() {
+
   ZERO_ONE = Eigen::Vector4f();
   ZERO_ONE << 0,0,0,1;
   X_AXIS   << 1,0,0,0;
@@ -178,6 +178,7 @@ void Muscle::initializeMatrices() {
   Z_AXIS   << 0,0,1,0;
 
   for (int i = 0; i < 3; i ++ )  {
+
     H_base[i] = Eigen::MatrixXf(4,4);
     H_base[i] << 1, 0, 0, r_mm * cos(2*M_PI/3*i),
                   0, 1, 0, r_mm * sin(2*M_PI/3*i),
@@ -188,7 +189,9 @@ void Muscle::initializeMatrices() {
   theta = 0;
   phi = 0;
   for (int i = 0; i < 3; i++) {
+
     for (int j = 0; j < resolution; j++) {
+
       H_muscle[i][j] = Eigen::MatrixXf(4,4);
       createTransform(H_muscle[i][j], theta/(resolution-1)*j, phi, muscle_length[i]/(resolution-1)*j);
     }
@@ -196,6 +199,7 @@ void Muscle::initializeMatrices() {
   }
 
 void Muscle::toQuaternion(Eigen::Vector4f& quat, Eigen::Matrix4f H) {
+
   quat(3) = sqrt(1.0 + H(0,0) + H(1,1) + H(2,2)) / 2.0;
   double w4 = (4.0 * quat(3));
   quat(0) = (H(2,1) - H(1,2)) / w4 ;
@@ -204,6 +208,7 @@ void Muscle::toQuaternion(Eigen::Vector4f& quat, Eigen::Matrix4f H) {
 }
 
 float Muscle::arctan2(float y, float x)  {
+
   float ratio = y/x;
 
   if(x > 0)  {
