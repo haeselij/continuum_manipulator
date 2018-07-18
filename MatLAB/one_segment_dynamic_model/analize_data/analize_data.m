@@ -1,11 +1,17 @@
 %% Analize data
+%before this run:
+%read_bag_vicon
+%calculate_muscle_length
+%dynamic_model_main_euler_forward
 
 %%  select and interpolate data
+%step pressure input
 exp_1_start = 1067;
 exp_1_end = 5655;
 
-exp_2_start = 13948;
-exp_2_end = 17618;
+% uncomment for linear pressure input
+% exp_1_start = 13948;
+% exp_1_end = 17618;
 
 q_exp_1(:,:) = q_exp(:,exp_1_start:exp_1_end);
 q_model_1(:,:) = q_; 
