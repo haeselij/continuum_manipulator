@@ -13,8 +13,6 @@ void setup() {
   nh.advertise(laengen_pub);
 }
 
-
-
 void loop() {
   sensor.length[0] = analogRead(A2);
   sensor.length[1] = analogRead(A1);
